@@ -38,6 +38,9 @@ void CommonNetworkApi::process_chunk_arrival(void* args) noexcept {
     auto* const data =
         static_cast<std::tuple<int, int, int, uint64_t, int>*>(args);
     const auto [tag, src, dest, count, chunk_id] = *data;
+    // sim_send() allocates this tuple and releases ownership to the event queue;
+    // the values are copied out above, so free it here (it was leaked per send).
+    delete data;
 
     // search tracker
     auto& tracker = CommonNetworkApi::get_callback_tracker();
